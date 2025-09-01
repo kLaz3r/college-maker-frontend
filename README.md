@@ -1,29 +1,131 @@
-# Create T3 App
+# Photo Collage Maker
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A modern web application for creating beautiful photo collages with customizable layouts and settings. Built with Next.js, TypeScript, and TailwindCSS.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- **Drag & Drop Upload**: Support for JPEG, PNG, GIF, BMP, TIFF, and WebP images
+- **File Validation**: Automatic validation of file types, sizes, and counts
+- **Customizable Layouts**: Choose from masonry, grid, random, and spiral layouts
+- **Flexible Configuration**: Adjust dimensions, DPI, spacing, background color, and more
+- **Real-time Progress**: Live status updates during collage processing
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Type Safety**: Full TypeScript support with comprehensive type definitions
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Tech Stack
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: TailwindCSS with shadcn/ui components
+- **State Management**: React Query for API state
+- **Forms**: React Hook Form with Zod validation
+- **Color Picker**: react-colorful
+- **Icons**: Lucide React
+- **Backend Integration**: REST API with automatic error handling
 
-## Learn More
+## Getting Started
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### Prerequisites
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+- Node.js 18+
+- pnpm package manager
+- Backend API server running on `http://localhost:8000`
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### Installation
 
-## How do I deploy this?
+1. Clone the repository:
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+```bash
+git clone https://github.com/kLaz3r/college-maker-frontend.git
+cd college-maker-frontend
+```
+
+2. Install dependencies:
+
+```bash
+pnpm install
+```
+
+3. Start the development server:
+
+```bash
+pnpm dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+```
+
+## API Integration
+
+The frontend communicates with a FastAPI backend that handles image processing. The API endpoints include:
+
+- `POST /api/collage/create` - Create a new collage job
+- `GET /api/collage/status/{job_id}` - Get job status and progress
+- `GET /api/collage/download/{job_id}` - Download completed collage
+- `GET /api/collage/jobs` - List all jobs
+- `DELETE /api/collage/cleanup/{job_id}` - Clean up job files
+
+## Project Structure
+
+```
+src/
+├── app/                    # Next.js app directory
+│   ├── layout.tsx         # Root layout with providers
+│   └── page.tsx           # Main page
+├── components/            # React components
+│   ├── ui/               # shadcn/ui components
+│   ├── collage-maker.tsx # Main application component
+│   ├── file-upload.tsx   # File upload with drag & drop
+│   ├── configuration-panel.tsx # Collage settings form
+│   └── job-status.tsx    # Job progress and download
+├── lib/                  # Utility functions and configurations
+│   ├── api.ts           # API client
+│   ├── query-client.ts  # React Query configuration
+│   └── types.ts         # TypeScript type definitions
+└── styles/
+    └── globals.css      # Global styles
+```
+
+## Usage
+
+1. **Upload Images**: Drag and drop or click to select 2-100 images
+2. **Configure Settings**: Adjust layout, dimensions, DPI, spacing, and colors
+3. **Create Collage**: Submit the job and monitor progress
+4. **Download**: Save your completed collage when processing is finished
+
+## Development
+
+### Available Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
+- `pnpm typecheck` - Run TypeScript type checking
+
+### Code Quality
+
+The project includes:
+
+- ESLint for code linting
+- Prettier for code formatting
+- TypeScript for type safety
+- Husky for git hooks
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
