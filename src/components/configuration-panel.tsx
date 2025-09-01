@@ -41,8 +41,11 @@ type CollageConfigForm = z.infer<typeof collageConfigSchema>;
 
 interface ConfigurationPanelProps {
   onCreateCollage: (config: CollageConfig) => void;
+  onAnalyze?: (config: CollageConfig) => void;
   isLoading: boolean;
   disabled: boolean;
+  isAnalyzing?: boolean;
+  hasAnalysisResults?: boolean;
 }
 
 const DEFAULT_CONFIG: CollageConfigForm = {
@@ -58,8 +61,11 @@ const DEFAULT_CONFIG: CollageConfigForm = {
 
 export function ConfigurationPanel({
   onCreateCollage,
+  onAnalyze,
   isLoading,
   disabled,
+  isAnalyzing = false,
+  hasAnalysisResults = false,
 }: ConfigurationPanelProps) {
   const {
     register,
@@ -76,6 +82,12 @@ export function ConfigurationPanel({
 
   const onSubmit = (data: CollageConfigForm) => {
     onCreateCollage(data);
+  };
+
+  const handleAnalyze = () => {
+    if (!onAnalyze) return;
+    const data = watch();
+    onAnalyze(data);
   };
 
   return (
@@ -256,14 +268,27 @@ export function ConfigurationPanel({
             </div>
           </div>
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading || disabled}
-          >
-            {isLoading ? "Creating Collage..." : "Create Collage"}
-          </Button>
+          {/* Action Buttons */}
+          <div className="flex space-x-2">
+            {onAnalyze && (
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={handleAnalyze}
+                disabled={isAnalyzing || disabled}
+              >
+                {isAnalyzing ? "🔍 Analyzing..." : "🔍 Analyze Layout"}
+              </Button>
+            )}
+            <Button
+              type="submit"
+              className={`flex-1 ${hasAnalysisResults ? "flex-none" : ""}`}
+              disabled={isLoading || disabled}
+            >
+              {isLoading ? "Creating Collage..." : "Create Collage"}
+            </Button>
+          </div>
         </form>
       </CardContent>
     </Card>
