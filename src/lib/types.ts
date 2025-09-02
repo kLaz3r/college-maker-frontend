@@ -8,7 +8,7 @@ export interface CollageConfig {
   height_mm: number; // 50-1219.2
   dpi: number; // 72-300
   layout_style: LayoutStyle;
-  spacing: number; // 0-50
+  spacing: number; // 0.0-100.0
   background_color: string; // Hex color, e.g., "#FFFFFF"
   maintain_aspect_ratio: boolean;
   apply_shadow: boolean;
@@ -123,7 +123,7 @@ export interface GridOption {
 export interface CanvasInfo {
   width: number; // Canvas width in pixels
   height: number; // Canvas height in pixels
-  spacing: number; // Spacing between images in pixels
+  spacing: number; // Spacing between images as percentage of canvas dimensions
 }
 
 export interface GridOptimizationData {

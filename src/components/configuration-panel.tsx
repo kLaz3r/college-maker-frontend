@@ -31,7 +31,7 @@ const collageConfigSchema = z.object({
   height_mm: z.number().min(50).max(1219.2),
   dpi: z.number().min(72).max(300),
   layout_style: z.enum(["masonry", "grid"]),
-  spacing: z.number().min(0).max(50),
+  spacing: z.number().min(0).max(100),
   background_color: z.string().regex(/^#[0-9A-F]{6}$/i),
   maintain_aspect_ratio: z.boolean(),
   apply_shadow: z.boolean(),
@@ -53,8 +53,8 @@ const DEFAULT_CONFIG: CollageConfigForm = {
   width_mm: 150,
   height_mm: 100,
   dpi: 150,
-  layout_style: "masonry",
-  spacing: 5,
+  layout_style: "grid",
+  spacing: 30.0,
   background_color: "#FFFFFF",
   maintain_aspect_ratio: true,
   apply_shadow: false,
@@ -181,15 +181,20 @@ export function ConfigurationPanel({
 
           {/* Spacing */}
           <div className="space-y-2">
-            <Label htmlFor="spacing">Spacing (pixels)</Label>
+            <Label htmlFor="spacing">Spacing (%)</Label>
             <Input
               id="spacing"
               type="number"
+              step="0.1"
               min="0"
-              max="50"
+              max="100"
               {...register("spacing", { valueAsNumber: true })}
               disabled={disabled}
             />
+            <p className="text-xs text-gray-500">
+              Percentage of canvas dimensions for consistent spacing across
+              different output sizes
+            </p>
             {errors.spacing && (
               <p className="text-sm text-red-600">{errors.spacing.message}</p>
             )}
