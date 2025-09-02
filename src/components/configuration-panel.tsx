@@ -27,8 +27,8 @@ import {
 import type { CollageConfig, LayoutStyle } from "~/lib/types";
 
 const collageConfigSchema = z.object({
-  width_inches: z.number().min(4).max(48),
-  height_inches: z.number().min(4).max(48),
+  width_mm: z.number().min(101.6).max(1219.2),
+  height_mm: z.number().min(101.6).max(1219.2),
   dpi: z.number().min(72).max(300),
   layout_style: z.enum(["masonry", "grid", "random", "spiral"]),
   spacing: z.number().min(0).max(50),
@@ -50,8 +50,8 @@ interface ConfigurationPanelProps {
 }
 
 const DEFAULT_CONFIG: CollageConfigForm = {
-  width_inches: 12,
-  height_inches: 16,
+  width_mm: 150,
+  height_mm: 100,
   dpi: 150,
   layout_style: "masonry",
   spacing: 5,
@@ -102,37 +102,37 @@ export function ConfigurationPanel({
           {/* Dimensions */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="width_inches">Width (inches)</Label>
+              <Label htmlFor="width_mm">Width (mm)</Label>
               <Input
-                id="width_inches"
+                id="width_mm"
                 type="number"
                 step="0.1"
-                min="4"
-                max="48"
-                {...register("width_inches", { valueAsNumber: true })}
+                min="101.6"
+                max="1219.2"
+                {...register("width_mm", { valueAsNumber: true })}
                 disabled={disabled}
               />
-              {errors.width_inches && (
+              {errors.width_mm && (
                 <p className="text-sm text-red-600">
-                  {errors.width_inches.message}
+                  {errors.width_mm.message}
                 </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="height_inches">Height (inches)</Label>
+              <Label htmlFor="height_mm">Height (mm)</Label>
               <Input
-                id="height_inches"
+                id="height_mm"
                 type="number"
                 step="0.1"
-                min="4"
-                max="48"
-                {...register("height_inches", { valueAsNumber: true })}
+                min="101.6"
+                max="1219.2"
+                {...register("height_mm", { valueAsNumber: true })}
                 disabled={disabled}
               />
-              {errors.height_inches && (
+              {errors.height_mm && (
                 <p className="text-sm text-red-600">
-                  {errors.height_inches.message}
+                  {errors.height_mm.message}
                 </p>
               )}
             </div>

@@ -4,8 +4,8 @@ export type JobStatus = "pending" | "processing" | "completed" | "failed";
 
 // Request/Configuration Types
 export interface CollageConfig {
-  width_inches: number; // 4-48
-  height_inches: number; // 4-48
+  width_mm: number; // 101.6-1219.2
+  height_mm: number; // 101.6-1219.2
   dpi: number; // 72-300
   layout_style: LayoutStyle;
   spacing: number; // 0-50
@@ -144,8 +144,8 @@ export interface GridOptimizationResponse {
 
 export interface GridOptimizationRequest {
   num_images: number;
-  width_inches?: number;
-  height_inches?: number;
+  width_mm?: number;
+  height_mm?: number;
   dpi?: number;
   spacing?: number;
 }

@@ -134,8 +134,8 @@ export function CollageMaker() {
 
     const optimizationData: GridOptimizationRequest = {
       num_images: files.length,
-      width_inches: config.width_inches,
-      height_inches: config.height_inches,
+      width_mm: config.width_mm,
+      height_mm: config.height_mm,
       dpi: config.dpi,
       spacing: config.spacing,
     };
