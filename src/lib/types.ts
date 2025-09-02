@@ -15,7 +15,7 @@ export interface CollageConfig {
 }
 
 export interface CreateCollageRequest extends CollageConfig {
-  files: File[]; // 2-100 files
+  files: File[]; // 2-200 files
 }
 
 // Response Types
@@ -133,3 +133,59 @@ export interface AnalyzeOverlapRequest extends CollageConfig {
 }
 
 export type AnalyzeOverlapResponse = OverlapAnalysis;
+
+// Grid Optimization Types
+export interface CurrentGrid {
+  total_images: number; // Current number of images
+  cols: number; // Number of columns in current grid
+  rows: number; // Number of rows in current grid
+  images_in_last_row: number; // Images in last row (0 = complete row)
+  is_perfect: boolean; // Whether current grid is perfect
+}
+
+export interface PerfectGridOption {
+  type: "perfect" | "add_images" | "remove_images";
+  total_images: number; // Total images in perfect grid
+  cols: number; // Number of columns in perfect grid
+  rows: number; // Number of rows in perfect grid
+  images_needed?: number; // Images to add (only if type is "add_images")
+  images_to_remove?: number; // Images to remove (only if type is "remove_images")
+}
+
+export interface GridOption {
+  images_needed?: number; // Images to add
+  images_to_remove?: number; // Images to remove
+  total_images: number; // Total images in this grid
+  cols: number; // Number of columns
+  rows: number; // Number of rows
+}
+
+export interface CanvasInfo {
+  width: number; // Canvas width in pixels
+  height: number; // Canvas height in pixels
+  spacing: number; // Spacing between images in pixels
+}
+
+export interface GridOptimizationData {
+  current_grid: CurrentGrid;
+  closest_perfect_grid: PerfectGridOption;
+  recommendations: {
+    add_images: GridOption[];
+    remove_images: GridOption[];
+  };
+  canvas_info: CanvasInfo;
+}
+
+export interface GridOptimizationResponse {
+  success: boolean;
+  optimization: GridOptimizationData;
+  message: string;
+}
+
+export interface GridOptimizationRequest {
+  num_images: number;
+  width_inches?: number;
+  height_inches?: number;
+  dpi?: number;
+  spacing?: number;
+}

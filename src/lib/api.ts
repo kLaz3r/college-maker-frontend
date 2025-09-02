@@ -7,6 +7,8 @@ import type {
   CollageJob,
   CreateCollageRequest,
   CreateCollageResponse,
+  GridOptimizationRequest,
+  GridOptimizationResponse,
   HealthCheckResponse,
   RateLimitError,
 } from "./types";
@@ -127,6 +129,27 @@ class ApiClient {
 
   async healthCheck(): Promise<HealthCheckResponse> {
     return this.request<HealthCheckResponse>("/health");
+  }
+
+  async optimizeGrid(
+    data: GridOptimizationRequest,
+  ): Promise<GridOptimizationResponse> {
+    const formData = new FormData();
+
+    // Add parameters
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined) {
+        formData.append(key, String(value));
+      }
+    });
+
+    return this.request<GridOptimizationResponse>(
+      "/api/collage/optimize-grid",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
   }
 }
 

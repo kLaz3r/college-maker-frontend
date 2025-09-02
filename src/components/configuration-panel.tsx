@@ -42,10 +42,14 @@ type CollageConfigForm = z.infer<typeof collageConfigSchema>;
 interface ConfigurationPanelProps {
   onCreateCollage: (config: CollageConfig) => void;
   onAnalyze?: (config: CollageConfig) => void;
+  onOptimizeGrid?: (config: CollageConfig) => void;
   isLoading: boolean;
   disabled: boolean;
   isAnalyzing?: boolean;
   hasAnalysisResults?: boolean;
+  isOptimizingGrid?: boolean;
+  hasGridOptimization?: boolean;
+  currentLayoutStyle?: string;
 }
 
 const DEFAULT_CONFIG: CollageConfigForm = {
@@ -62,10 +66,13 @@ const DEFAULT_CONFIG: CollageConfigForm = {
 export function ConfigurationPanel({
   onCreateCollage,
   onAnalyze,
+  onOptimizeGrid,
   isLoading,
   disabled,
   isAnalyzing = false,
   hasAnalysisResults = false,
+  isOptimizingGrid = false,
+  hasGridOptimization = false,
 }: ConfigurationPanelProps) {
   const {
     register,
@@ -79,6 +86,7 @@ export function ConfigurationPanel({
   });
 
   const backgroundColor = watch("background_color");
+  const currentLayoutStyle = watch("layout_style");
 
   const onSubmit = (data: CollageConfigForm) => {
     onCreateCollage(data);
@@ -88,6 +96,12 @@ export function ConfigurationPanel({
     if (!onAnalyze) return;
     const data = watch();
     onAnalyze(data);
+  };
+
+  const handleOptimizeGrid = () => {
+    if (!onOptimizeGrid) return;
+    const data = watch();
+    onOptimizeGrid(data);
   };
 
   return (
@@ -269,21 +283,32 @@ export function ConfigurationPanel({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap gap-2">
             {onAnalyze && (
               <Button
                 type="button"
                 variant="outline"
-                className="flex-1"
+                className="min-w-0 flex-1"
                 onClick={handleAnalyze}
                 disabled={isAnalyzing || disabled}
               >
                 {isAnalyzing ? "🔍 Analyzing..." : "🔍 Analyze Layout"}
               </Button>
             )}
+            {onOptimizeGrid && currentLayoutStyle === "grid" && (
+              <Button
+                type="button"
+                variant="outline"
+                className="min-w-0 flex-1"
+                onClick={handleOptimizeGrid}
+                disabled={isOptimizingGrid || disabled}
+              >
+                {isOptimizingGrid ? "📐 Optimizing..." : "📐 Optimize Grid"}
+              </Button>
+            )}
             <Button
               type="submit"
-              className={`flex-1 ${hasAnalysisResults ? "flex-none" : ""}`}
+              className={`min-w-0 flex-1 ${hasAnalysisResults || hasGridOptimization ? "flex-none" : ""}`}
               disabled={isLoading || disabled}
             >
               {isLoading ? "Creating Collage..." : "Create Collage"}

@@ -14,7 +14,7 @@ interface FileUploadProps {
   onFilesChange: (files: FileWithPreview[]) => void;
 }
 
-const MAX_FILES = 100;
+const MAX_FILES = 200;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const TOTAL_MAX_SIZE = 500 * 1024 * 1024; // 500MB
 const ACCEPTED_TYPES = [
@@ -48,7 +48,9 @@ export function FileUpload({ files, onFilesChange }: FileUploadProps) {
 
       // Check total file count
       if (files.length + fileList.length > MAX_FILES) {
-        toast.error(`Too many files. Maximum ${MAX_FILES} files allowed.`);
+        toast.error("Too many files", {
+          description: `Maximum ${MAX_FILES} files allowed.`,
+        });
         return;
       }
 
@@ -60,7 +62,9 @@ export function FileUpload({ files, onFilesChange }: FileUploadProps) {
       );
 
       if (currentTotalSize + newFilesSize > TOTAL_MAX_SIZE) {
-        toast.error("Total file size exceeds 500MB limit.");
+        toast.error("File size limit exceeded", {
+          description: "Total file size exceeds 500MB limit.",
+        });
         return;
       }
 
@@ -76,7 +80,9 @@ export function FileUpload({ files, onFilesChange }: FileUploadProps) {
       });
 
       if (errors.length > 0) {
-        errors.forEach((error) => toast.error(error));
+        errors.forEach((error) =>
+          toast.error("File validation error", { description: error }),
+        );
       }
 
       if (newFiles.length > 0) {
