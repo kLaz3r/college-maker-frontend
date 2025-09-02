@@ -1,11 +1,11 @@
 // Enums
-export type LayoutStyle = "masonry" | "grid" | "random" | "spiral";
+export type LayoutStyle = "masonry" | "grid";
 export type JobStatus = "pending" | "processing" | "completed" | "failed";
 
 // Request/Configuration Types
 export interface CollageConfig {
-  width_mm: number; // 101.6-1219.2
-  height_mm: number; // 101.6-1219.2
+  width_mm: number; // 50-1219.2
+  height_mm: number; // 50-1219.2
   dpi: number; // 72-300
   layout_style: LayoutStyle;
   spacing: number; // 0-50

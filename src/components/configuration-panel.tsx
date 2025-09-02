@@ -27,10 +27,10 @@ import {
 import type { CollageConfig, LayoutStyle } from "~/lib/types";
 
 const collageConfigSchema = z.object({
-  width_mm: z.number().min(101.6).max(1219.2),
-  height_mm: z.number().min(101.6).max(1219.2),
+  width_mm: z.number().min(50).max(1219.2),
+  height_mm: z.number().min(50).max(1219.2),
   dpi: z.number().min(72).max(300),
-  layout_style: z.enum(["masonry", "grid", "random", "spiral"]),
+  layout_style: z.enum(["masonry", "grid"]),
   spacing: z.number().min(0).max(50),
   background_color: z.string().regex(/^#[0-9A-F]{6}$/i),
   maintain_aspect_ratio: z.boolean(),
@@ -107,7 +107,7 @@ export function ConfigurationPanel({
                 id="width_mm"
                 type="number"
                 step="0.1"
-                min="101.6"
+                min="50"
                 max="1219.2"
                 {...register("width_mm", { valueAsNumber: true })}
                 disabled={disabled}
@@ -125,7 +125,7 @@ export function ConfigurationPanel({
                 id="height_mm"
                 type="number"
                 step="0.1"
-                min="101.6"
+                min="50"
                 max="1219.2"
                 {...register("height_mm", { valueAsNumber: true })}
                 disabled={disabled}
@@ -170,8 +170,6 @@ export function ConfigurationPanel({
               <SelectContent>
                 <SelectItem value="masonry">Masonry</SelectItem>
                 <SelectItem value="grid">Grid</SelectItem>
-                <SelectItem value="random">Random</SelectItem>
-                <SelectItem value="spiral">Spiral</SelectItem>
               </SelectContent>
             </Select>
             {errors.layout_style && (
