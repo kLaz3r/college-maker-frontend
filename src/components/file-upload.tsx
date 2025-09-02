@@ -216,13 +216,26 @@ export function FileUpload({ files, onFilesChange }: FileUploadProps) {
             <ImageIcon className="h-4 w-4" />
             <span>{files.length} file(s) uploaded</span>
           </div>
-          <div>
-            Total size:{" "}
-            {(
-              files.reduce((sum, f) => sum + f.file.size, 0) /
-              (1024 * 1024)
-            ).toFixed(1)}{" "}
-            MB
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                files.forEach((f) => URL.revokeObjectURL(f.preview));
+                onFilesChange([]);
+                toast.success("All files removed");
+              }}
+            >
+              Clear All
+            </Button>
+            <div>
+              Total size:{" "}
+              {(
+                files.reduce((sum, f) => sum + f.file.size, 0) /
+                (1024 * 1024)
+              ).toFixed(1)}{" "}
+              MB
+            </div>
           </div>
         </div>
       )}

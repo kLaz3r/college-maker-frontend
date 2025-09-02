@@ -121,7 +121,6 @@ export function CollageMaker() {
   };
 
   const handleReset = () => {
-    setFiles([]);
     setCurrentJob(null);
     setGridOptimization(null);
     setShowGridOptimization(false);
