@@ -6,14 +6,12 @@ import { toast } from "sonner";
 
 import { apiClient } from "~/lib/api";
 import type {
-  AnalyzeOverlapResponse,
   CollageJob,
   CreateCollageRequest,
   FileWithPreview,
   GridOptimizationData,
   GridOptimizationRequest,
   GridOptimizationResponse,
-  OverlapRecommendation,
 } from "~/lib/types";
 
 import { Button } from "~/components/ui/button";
@@ -24,9 +22,7 @@ import { JobStatus } from "./job-status";
 export function CollageMaker() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [currentJob, setCurrentJob] = useState<CollageJob | null>(null);
-  const [overlapAnalysis, setOverlapAnalysis] =
-    useState<AnalyzeOverlapResponse | null>(null);
-  const [showAnalysisResults, setShowAnalysisResults] = useState(false);
+
   const [gridOptimization, setGridOptimization] =
     useState<GridOptimizationData | null>(null);
   const [showGridOptimization, setShowGridOptimization] = useState(false);
@@ -45,21 +41,6 @@ export function CollageMaker() {
     },
     onError: (error) => {
       toast.error(`Failed to create collage: ${error.message}`);
-    },
-  });
-
-  // Analyze overlaps mutation
-  const analyzeOverlapsMutation = useMutation({
-    mutationFn: (
-      data: Omit<CreateCollageRequest, "files"> & { files: File[] },
-    ) => apiClient.analyzeOverlaps(data),
-    onSuccess: (response) => {
-      setOverlapAnalysis(response);
-      setShowAnalysisResults(true);
-      toast.success("Overlap analysis completed!");
-    },
-    onError: (error) => {
-      toast.error(`Analysis failed: ${error.message}`);
     },
   });
 
@@ -142,62 +123,8 @@ export function CollageMaker() {
   const handleReset = () => {
     setFiles([]);
     setCurrentJob(null);
-    setOverlapAnalysis(null);
-    setShowAnalysisResults(false);
     setGridOptimization(null);
     setShowGridOptimization(false);
-  };
-
-  const handleAnalyze = (config: Omit<CreateCollageRequest, "files">) => {
-    if (files.length < 2) {
-      toast.error("Please upload at least 2 images");
-      return;
-    }
-
-    const analysisData = {
-      ...config,
-      files: files.map((f) => f.file),
-    };
-
-    analyzeOverlapsMutation.mutate(analysisData);
-  };
-
-  const handleRemoveSuggested = () => {
-    if (!overlapAnalysis?.recommended_removals) return;
-
-    const indicesToRemove = overlapAnalysis.recommended_removals.map(
-      (r) => r.index,
-    );
-    const newFiles = files.filter(
-      (_, index) => !indicesToRemove.includes(index),
-    );
-    setFiles(newFiles);
-    setOverlapAnalysis(null);
-    setShowAnalysisResults(false);
-    toast.success(`Removed ${indicesToRemove.length} suggested images`);
-  };
-
-  const handleCreateWithCleanFiles = (
-    config: Omit<CreateCollageRequest, "files">,
-  ) => {
-    if (!overlapAnalysis?.recommended_removals) {
-      handleCreateCollage(config);
-      return;
-    }
-
-    const indicesToRemove = overlapAnalysis.recommended_removals.map(
-      (r) => r.index,
-    );
-    const cleanFiles = files.filter(
-      (_, index) => !indicesToRemove.includes(index),
-    );
-
-    const collageData: CreateCollageRequest = {
-      ...config,
-      files: cleanFiles.map((f) => f.file),
-    };
-
-    createCollageMutation.mutate(collageData);
   };
 
   const handleOptimizeGrid = (config: Omit<CreateCollageRequest, "files">) => {
@@ -265,77 +192,13 @@ export function CollageMaker() {
             Configure Collage
           </h2>
           <ConfigurationPanel
-            onAnalyze={handleAnalyze}
             onOptimizeGrid={handleOptimizeGrid}
-            onCreateCollage={
-              overlapAnalysis ? handleCreateWithCleanFiles : handleCreateCollage
-            }
+            onCreateCollage={handleCreateCollage}
             isLoading={createCollageMutation.isPending}
             disabled={!!currentJob}
-            isAnalyzing={analyzeOverlapsMutation.isPending}
-            hasAnalysisResults={showAnalysisResults}
             isOptimizingGrid={optimizeGridMutation.isPending}
             hasGridOptimization={showGridOptimization}
           />
-        </div>
-      )}
-
-      {/* Analysis Results */}
-      {showAnalysisResults && overlapAnalysis && (
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Analysis Results
-          </h2>
-          <div className="rounded-lg border p-6">
-            <div
-              className={`rounded-md p-4 ${overlapAnalysis.has_overlaps ? "border-red-200 bg-red-50" : "border-green-200 bg-green-50"}`}
-            >
-              <h3
-                className={`text-lg font-semibold ${overlapAnalysis.has_overlaps ? "text-red-800" : "text-green-800"}`}
-              >
-                {overlapAnalysis.has_overlaps
-                  ? "⚠️ Overlaps Detected"
-                  : "✅ No Overlaps Found"}
-              </h3>
-              <p className="mt-2 text-sm">
-                {overlapAnalysis.overlap_count} overlapping pairs found in{" "}
-                {overlapAnalysis.overlapping_images} images.
-              </p>
-              <p className="mt-1 text-sm font-medium">
-                Recommendation: {overlapAnalysis.recommendation.message}
-              </p>
-            </div>
-
-            {overlapAnalysis.recommended_removals &&
-              overlapAnalysis.recommended_removals.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="text-md font-medium">Suggested Removals:</h4>
-                  <ul className="mt-2 space-y-1">
-                    {overlapAnalysis.recommended_removals.map((removal) => (
-                      <li key={removal.index} className="text-sm">
-                        • {removal.filename} (overlaps: {removal.overlap_count})
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="mt-4 flex space-x-2">
-                    <Button
-                      onClick={handleRemoveSuggested}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Remove Suggested Images
-                    </Button>
-                    <Button
-                      onClick={() => setShowAnalysisResults(false)}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Close
-                    </Button>
-                  </div>
-                </div>
-              )}
-          </div>
         </div>
       )}
 

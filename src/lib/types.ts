@@ -33,7 +33,6 @@ export interface CollageJob {
   output_file?: string; // Filename or null
   error_message?: string; // Error description or null
   progress: number; // 0-100
-  overlap_analysis?: OverlapAnalysis;
 }
 
 export interface ApiInfo {
@@ -94,45 +93,6 @@ export interface FileWithPreview {
 export interface JobWithPolling extends CollageJob {
   pollingInterval?: NodeJS.Timeout;
 }
-
-// Overlap Analysis Types
-export interface OverlapDetail {
-  image1_index: number;
-  image2_index: number;
-  image1_name: string;
-  image2_name: string;
-  overlap_area: number;
-}
-
-export interface OverlapRecommendation {
-  action: "none" | "remove_images" | "moderate" | "adjust_layout";
-  type?: "low" | "moderate" | "high";
-  message: string;
-  images_to_remove?: number;
-  new_total_images?: number;
-  overlap_density?: number;
-}
-
-export interface SuggestedRemoval {
-  index: number;
-  filename: string;
-  overlap_count: number;
-}
-
-export interface OverlapAnalysis {
-  has_overlaps: boolean;
-  overlap_count: number;
-  overlapping_images: number;
-  details: OverlapDetail[];
-  recommendation: OverlapRecommendation;
-  recommended_removals?: SuggestedRemoval[];
-}
-
-export interface AnalyzeOverlapRequest extends CollageConfig {
-  files: File[];
-}
-
-export type AnalyzeOverlapResponse = OverlapAnalysis;
 
 // Grid Optimization Types
 export interface CurrentGrid {

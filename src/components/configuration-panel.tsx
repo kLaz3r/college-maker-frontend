@@ -41,12 +41,9 @@ type CollageConfigForm = z.infer<typeof collageConfigSchema>;
 
 interface ConfigurationPanelProps {
   onCreateCollage: (config: CollageConfig) => void;
-  onAnalyze?: (config: CollageConfig) => void;
   onOptimizeGrid?: (config: CollageConfig) => void;
   isLoading: boolean;
   disabled: boolean;
-  isAnalyzing?: boolean;
-  hasAnalysisResults?: boolean;
   isOptimizingGrid?: boolean;
   hasGridOptimization?: boolean;
   currentLayoutStyle?: string;
@@ -65,12 +62,9 @@ const DEFAULT_CONFIG: CollageConfigForm = {
 
 export function ConfigurationPanel({
   onCreateCollage,
-  onAnalyze,
   onOptimizeGrid,
   isLoading,
   disabled,
-  isAnalyzing = false,
-  hasAnalysisResults = false,
   isOptimizingGrid = false,
   hasGridOptimization = false,
 }: ConfigurationPanelProps) {
@@ -90,12 +84,6 @@ export function ConfigurationPanel({
 
   const onSubmit = (data: CollageConfigForm) => {
     onCreateCollage(data);
-  };
-
-  const handleAnalyze = () => {
-    if (!onAnalyze) return;
-    const data = watch();
-    onAnalyze(data);
   };
 
   const handleOptimizeGrid = () => {
@@ -284,17 +272,6 @@ export function ConfigurationPanel({
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-2">
-            {onAnalyze && (
-              <Button
-                type="button"
-                variant="outline"
-                className="min-w-0 flex-1"
-                onClick={handleAnalyze}
-                disabled={isAnalyzing || disabled}
-              >
-                {isAnalyzing ? "🔍 Analyzing..." : "🔍 Analyze Layout"}
-              </Button>
-            )}
             {onOptimizeGrid && currentLayoutStyle === "grid" && (
               <Button
                 type="button"
@@ -308,7 +285,7 @@ export function ConfigurationPanel({
             )}
             <Button
               type="submit"
-              className={`min-w-0 flex-1 ${hasAnalysisResults || hasGridOptimization ? "flex-none" : ""}`}
+              className={`min-w-0 flex-1 ${hasGridOptimization ? "flex-none" : ""}`}
               disabled={isLoading || disabled}
             >
               {isLoading ? "Creating Collage..." : "Create Collage"}

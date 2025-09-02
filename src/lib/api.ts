@@ -1,6 +1,4 @@
 import type {
-  AnalyzeOverlapRequest,
-  AnalyzeOverlapResponse,
   ApiError,
   ApiInfo,
   CleanupResponse,
@@ -64,32 +62,6 @@ class ApiClient {
       method: "POST",
       body: formData,
     });
-  }
-
-  async analyzeOverlaps(
-    data: AnalyzeOverlapRequest,
-  ): Promise<AnalyzeOverlapResponse> {
-    const formData = new FormData();
-
-    // Add files
-    data.files.forEach((file, index) => {
-      formData.append("files", file);
-    });
-
-    // Add configuration
-    Object.entries(data).forEach(([key, value]) => {
-      if (key !== "files") {
-        formData.append(key, String(value));
-      }
-    });
-
-    return this.request<AnalyzeOverlapResponse>(
-      "/api/collage/analyze-overlaps",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
   }
 
   async getJobStatus(jobId: string): Promise<CollageJob> {

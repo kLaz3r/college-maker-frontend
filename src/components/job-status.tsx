@@ -141,32 +141,6 @@ export function JobStatus({ job, onDownload, onReset }: JobStatusProps) {
             </p>
           </div>
         )}
-
-        {/* Overlap Analysis */}
-        {job.status === "completed" && job.overlap_analysis && (
-          <div className="mt-4 rounded-lg border p-4">
-            <h4
-              className={`text-lg font-semibold ${job.overlap_analysis.has_overlaps ? "text-orange-600" : "text-green-600"}`}
-            >
-              {job.overlap_analysis.has_overlaps
-                ? "⚠️ Layout Analysis"
-                : "✅ Layout Analysis"}
-            </h4>
-            <div className="mt-2 text-sm">
-              {job.overlap_analysis.overlap_count > 0 ? (
-                <p>
-                  Found {job.overlap_analysis.overlap_count} overlapping pairs
-                  in {job.overlap_analysis.overlapping_images} images.
-                </p>
-              ) : (
-                <p>No overlaps detected - perfect layout!</p>
-              )}
-              <p className="mt-1 font-medium">
-                Recommendation: {job.overlap_analysis.recommendation.message}
-              </p>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
