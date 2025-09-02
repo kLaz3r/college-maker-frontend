@@ -22,6 +22,8 @@ import { JobStatus } from "./job-status";
 export function CollageMaker() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [currentJob, setCurrentJob] = useState<CollageJob | null>(null);
+  const [currentOutputFormat, setCurrentOutputFormat] =
+    useState<string>("jpeg");
 
   const [gridOptimization, setGridOptimization] =
     useState<GridOptimizationData | null>(null);
@@ -91,6 +93,9 @@ export function CollageMaker() {
       return;
     }
 
+    // Store the output format for download
+    setCurrentOutputFormat(config.output_format ?? "jpeg");
+
     const collageData: CreateCollageRequest = {
       ...config,
       files: files.map((f) => f.file),
@@ -107,7 +112,7 @@ export function CollageMaker() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `collage-${currentJob.job_id}.jpg`;
+      a.download = `collage-${currentJob.job_id}.${currentOutputFormat}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -122,6 +127,7 @@ export function CollageMaker() {
 
   const handleReset = () => {
     setCurrentJob(null);
+    setCurrentOutputFormat("jpeg");
     setGridOptimization(null);
     setShowGridOptimization(false);
   };

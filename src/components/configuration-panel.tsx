@@ -2,7 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Palette } from "lucide-react";
-import { HexColorPicker } from "react-colorful";
+import { useEffect } from "react";
+import { HexAlphaColorPicker, HexColorPicker } from "react-colorful";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -24,7 +25,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
-import type { CollageConfig, LayoutStyle } from "~/lib/types";
+import type { CollageConfig, LayoutStyle, OutputFormat } from "~/lib/types";
 
 const collageConfigSchema = z.object({
   width_mm: z.number().min(50).max(1219.2),
@@ -32,9 +33,11 @@ const collageConfigSchema = z.object({
   dpi: z.number().min(72).max(300),
   layout_style: z.enum(["masonry", "grid"]),
   spacing: z.number().min(0).max(100),
-  background_color: z.string().regex(/^#[0-9A-F]{6}$/i),
+  background_color: z.string().regex(/^#[0-9A-F]{6}([0-9A-F]{2})?$/i),
   maintain_aspect_ratio: z.boolean(),
   apply_shadow: z.boolean(),
+  output_format: z.enum(["jpeg", "png", "tiff"]).optional(),
+  transparency: z.boolean().optional(),
 });
 
 type CollageConfigForm = z.infer<typeof collageConfigSchema>;
@@ -58,6 +61,8 @@ const DEFAULT_CONFIG: CollageConfigForm = {
   background_color: "#FFFFFF",
   maintain_aspect_ratio: true,
   apply_shadow: false,
+  output_format: "jpeg",
+  transparency: false,
 };
 
 export function ConfigurationPanel({
@@ -81,9 +86,24 @@ export function ConfigurationPanel({
 
   const backgroundColor = watch("background_color");
   const currentLayoutStyle = watch("layout_style");
+  const outputFormat = watch("output_format");
+  const transparency = watch("transparency");
+
+  // Handle transparency logic
+  useEffect(() => {
+    if (outputFormat === "png" && transparency) {
+      setValue("background_color", "#00000000");
+    } else if (outputFormat !== "png" && transparency) {
+      setValue("transparency", false);
+    }
+  }, [outputFormat, transparency, setValue]);
 
   const onSubmit = (data: CollageConfigForm) => {
-    onCreateCollage(data);
+    const config = { ...data };
+    if (data.output_format === "png" && data.transparency) {
+      config.background_color = "#00000000";
+    }
+    onCreateCollage(config);
   };
 
   const handleOptimizeGrid = () => {
@@ -179,6 +199,34 @@ export function ConfigurationPanel({
             )}
           </div>
 
+          {/* Output Format */}
+          <div className="space-y-2">
+            <Label htmlFor="output_format">Output Format</Label>
+            <Select
+              value={outputFormat ?? "jpeg"}
+              onValueChange={(value: OutputFormat) =>
+                setValue("output_format", value)
+              }
+              disabled={disabled}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select output format" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="jpeg">JPEG (Smallest file size)</SelectItem>
+                <SelectItem value="png">PNG (Supports transparency)</SelectItem>
+                <SelectItem value="tiff">
+                  TIFF (High-quality printing)
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.output_format && (
+              <p className="text-sm text-red-600">
+                {errors.output_format.message}
+              </p>
+            )}
+          </div>
+
           {/* Spacing */}
           <div className="space-y-2">
             <Label htmlFor="spacing">Spacing (%)</Label>
@@ -216,16 +264,25 @@ export function ConfigurationPanel({
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-3">
-                  <HexColorPicker
-                    color={backgroundColor}
-                    onChange={(color) => setValue("background_color", color)}
-                  />
+                  {outputFormat === "png" ? (
+                    <HexAlphaColorPicker
+                      color={backgroundColor}
+                      onChange={(color) => setValue("background_color", color)}
+                    />
+                  ) : (
+                    <HexColorPicker
+                      color={backgroundColor}
+                      onChange={(color) => setValue("background_color", color)}
+                    />
+                  )}
                   <Input
                     value={backgroundColor}
                     onChange={(e) =>
                       setValue("background_color", e.target.value)
                     }
-                    placeholder="#FFFFFF"
+                    placeholder={
+                      outputFormat === "png" ? "#FFFFFF00" : "#FFFFFF"
+                    }
                     className="mt-2"
                   />
                 </PopoverContent>
@@ -233,7 +290,7 @@ export function ConfigurationPanel({
               <Input
                 value={backgroundColor}
                 onChange={(e) => setValue("background_color", e.target.value)}
-                placeholder="#FFFFFF"
+                placeholder={outputFormat === "png" ? "#FFFFFF00" : "#FFFFFF"}
                 disabled={disabled}
               />
             </div>
@@ -243,6 +300,25 @@ export function ConfigurationPanel({
               </p>
             )}
           </div>
+
+          {/* Transparency Option */}
+          {outputFormat === "png" && (
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="transparency"
+                  checked={transparency ?? false}
+                  onCheckedChange={(checked) =>
+                    setValue("transparency", !!checked)
+                  }
+                  disabled={disabled}
+                />
+                <Label htmlFor="transparency">
+                  Enable transparency (sets background to transparent)
+                </Label>
+              </div>
+            </div>
+          )}
 
           {/* Options */}
           <div className="space-y-4">

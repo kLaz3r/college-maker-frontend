@@ -2,6 +2,9 @@
 export type LayoutStyle = "masonry" | "grid";
 export type JobStatus = "pending" | "processing" | "completed" | "failed";
 
+// Enums
+export type OutputFormat = "jpeg" | "png" | "tiff";
+
 // Request/Configuration Types
 export interface CollageConfig {
   width_mm: number; // 50-1219.2
@@ -9,9 +12,10 @@ export interface CollageConfig {
   dpi: number; // 72-300
   layout_style: LayoutStyle;
   spacing: number; // 0.0-100.0
-  background_color: string; // Hex color, e.g., "#FFFFFF"
+  background_color: string; // Hex color, e.g., "#FFFFFF" or "#RRGGBBAA"
   maintain_aspect_ratio: boolean;
   apply_shadow: boolean;
+  output_format?: OutputFormat; // Optional, defaults to "jpeg"
 }
 
 export interface CreateCollageRequest extends CollageConfig {
