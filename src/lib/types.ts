@@ -22,6 +22,40 @@ export interface CreateCollageRequest extends CollageConfig {
   files: File[]; // 2-200 files
 }
 
+// Screen/pixels-based configuration
+export interface CollagePixelsConfig {
+  width_px: number; // 320-20000
+  height_px: number; // 320-20000
+  dpi: number; // 72-300, saved as metadata
+  layout_style: LayoutStyle;
+  spacing: number; // 0.0-100.0 (percent of min(canvas side))
+  background_color: string; // Hex color, e.g., "#FFFFFF" or "#RRGGBBAA"
+  maintain_aspect_ratio: boolean;
+  apply_shadow: boolean;
+  output_format?: OutputFormat; // Optional, defaults to "jpeg"
+}
+
+export interface CreateCollagePixelsRequest extends CollagePixelsConfig {
+  files: File[]; // 2-200 files
+}
+
+// Form config used by UI (supports mm or px with a discriminator)
+export type CollageFormConfig = {
+  mode: "mm" | "px";
+  width_mm?: number;
+  height_mm?: number;
+  width_px?: number;
+  height_px?: number;
+  dpi: number;
+  layout_style: LayoutStyle;
+  spacing: number;
+  background_color: string;
+  maintain_aspect_ratio: boolean;
+  apply_shadow: boolean;
+  output_format?: OutputFormat;
+  transparency?: boolean;
+};
+
 // Response Types
 export interface CreateCollageResponse {
   job_id: string;

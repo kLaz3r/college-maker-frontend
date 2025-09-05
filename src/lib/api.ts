@@ -3,6 +3,7 @@ import type {
   ApiInfo,
   CleanupResponse,
   CollageJob,
+  CreateCollagePixelsRequest,
   CreateCollageRequest,
   CreateCollageResponse,
   GridOptimizationRequest,
@@ -38,7 +39,8 @@ class ApiClient {
       throw new Error(error.detail);
     }
 
-    return response.json();
+    const data = (await response.json()) as T;
+    return data;
   }
 
   async createCollage(
@@ -47,7 +49,7 @@ class ApiClient {
     const formData = new FormData();
 
     // Add files
-    data.files.forEach((file, index) => {
+    data.files.forEach((file) => {
       formData.append("files", file);
     });
 
@@ -59,6 +61,29 @@ class ApiClient {
     });
 
     return this.request<CreateCollageResponse>("/api/collage/create", {
+      method: "POST",
+      body: formData,
+    });
+  }
+
+  async createCollageByPixels(
+    data: CreateCollagePixelsRequest,
+  ): Promise<CreateCollageResponse> {
+    const formData = new FormData();
+
+    // Add files
+    data.files.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    // Add configuration (pixels based)
+    Object.entries(data).forEach(([key, value]) => {
+      if (key !== "files") {
+        formData.append(key, String(value));
+      }
+    });
+
+    return this.request<CreateCollageResponse>("/api/collage/create-pixels", {
       method: "POST",
       body: formData,
     });

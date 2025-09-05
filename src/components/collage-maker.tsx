@@ -6,12 +6,13 @@ import { toast } from "sonner";
 
 import { apiClient } from "~/lib/api";
 import type {
+  CollageFormConfig,
   CollageJob,
+  CreateCollagePixelsRequest,
   CreateCollageRequest,
   FileWithPreview,
   GridOptimizationData,
   GridOptimizationRequest,
-  GridOptimizationResponse,
 } from "~/lib/types";
 
 import { Button } from "~/components/ui/button";
@@ -87,7 +88,7 @@ export function CollageMaker() {
     }
   }, [jobStatus]);
 
-  const handleCreateCollage = (config: Omit<CreateCollageRequest, "files">) => {
+  const handleCreateCollage = (config: CollageFormConfig) => {
     if (files.length < 2) {
       toast.error("Please upload at least 2 images");
       return;
@@ -96,12 +97,48 @@ export function CollageMaker() {
     // Store the output format for download
     setCurrentOutputFormat(config.output_format ?? "jpeg");
 
-    const collageData: CreateCollageRequest = {
-      ...config,
-      files: files.map((f) => f.file),
-    };
-
-    createCollageMutation.mutate(collageData);
+    if (config.mode === "px") {
+      const collageData: CreateCollagePixelsRequest = {
+        width_px: config.width_px!,
+        height_px: config.height_px!,
+        dpi: config.dpi,
+        layout_style: config.layout_style,
+        spacing: config.spacing,
+        background_color: config.background_color,
+        maintain_aspect_ratio: config.maintain_aspect_ratio,
+        apply_shadow: config.apply_shadow,
+        output_format: config.output_format,
+        files: files.map((f) => f.file),
+      };
+      apiClient
+        .createCollageByPixels(collageData)
+        .then((response) => {
+          toast.success("Collage creation started!");
+          setCurrentJob({
+            job_id: response.job_id,
+            status: "pending",
+            created_at: new Date().toISOString(),
+            progress: 0,
+          });
+        })
+        .catch((error: Error) =>
+          toast.error(`Failed to create collage: ${error.message}`),
+        );
+    } else {
+      const collageData: CreateCollageRequest = {
+        width_mm: config.width_mm!,
+        height_mm: config.height_mm!,
+        dpi: config.dpi,
+        layout_style: config.layout_style,
+        spacing: config.spacing,
+        background_color: config.background_color,
+        maintain_aspect_ratio: config.maintain_aspect_ratio,
+        apply_shadow: config.apply_shadow,
+        output_format: config.output_format,
+        files: files.map((f) => f.file),
+      };
+      createCollageMutation.mutate(collageData);
+    }
   };
 
   const handleDownload = async () => {
@@ -132,16 +169,25 @@ export function CollageMaker() {
     setShowGridOptimization(false);
   };
 
-  const handleOptimizeGrid = (config: Omit<CreateCollageRequest, "files">) => {
+  const handleOptimizeGrid = (config: CollageFormConfig) => {
     if (files.length < 2) {
       toast.error("Please upload at least 2 images");
       return;
     }
 
+    // Convert px to mm if needed: mm = (px / dpi) * 25.4
+    const isPx = config.mode === "px";
+    const width_mm = isPx
+      ? (config.width_px! / config.dpi) * 25.4
+      : config.width_mm!;
+    const height_mm = isPx
+      ? (config.height_px! / config.dpi) * 25.4
+      : config.height_mm!;
+
     const optimizationData: GridOptimizationRequest = {
       num_images: files.length,
-      width_mm: config.width_mm,
-      height_mm: config.height_mm,
+      width_mm,
+      height_mm,
       dpi: config.dpi,
       spacing: config.spacing,
     };
