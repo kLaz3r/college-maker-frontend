@@ -16,6 +16,9 @@ export interface CollageConfig {
   maintain_aspect_ratio: boolean;
   apply_shadow: boolean;
   output_format?: OutputFormat; // Optional, defaults to "jpeg"
+  face_aware_cropping?: boolean; // Optional, defaults to false
+  face_margin?: number; // Optional, 0.0-0.3, defaults to 0.08
+  pretrim_borders?: boolean; // Optional, defaults to false
 }
 
 export interface CreateCollageRequest extends CollageConfig {
@@ -33,6 +36,9 @@ export interface CollagePixelsConfig {
   maintain_aspect_ratio: boolean;
   apply_shadow: boolean;
   output_format?: OutputFormat; // Optional, defaults to "jpeg"
+  face_aware_cropping?: boolean; // Optional, defaults to false
+  face_margin?: number; // Optional, 0.0-0.3, defaults to 0.08
+  pretrim_borders?: boolean; // Optional, defaults to false
 }
 
 export interface CreateCollagePixelsRequest extends CollagePixelsConfig {
@@ -54,6 +60,9 @@ export type CollageFormConfig = {
   apply_shadow: boolean;
   output_format?: OutputFormat;
   transparency?: boolean;
+  face_aware_cropping?: boolean;
+  face_margin?: number;
+  pretrim_borders?: boolean;
 };
 
 // Response Types

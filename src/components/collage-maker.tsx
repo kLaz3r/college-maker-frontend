@@ -108,6 +108,9 @@ export function CollageMaker() {
         maintain_aspect_ratio: config.maintain_aspect_ratio,
         apply_shadow: config.apply_shadow,
         output_format: config.output_format,
+        face_aware_cropping: config.face_aware_cropping,
+        face_margin: config.face_margin,
+        pretrim_borders: config.pretrim_borders,
         files: files.map((f) => f.file),
       };
       apiClient
@@ -135,6 +138,9 @@ export function CollageMaker() {
         maintain_aspect_ratio: config.maintain_aspect_ratio,
         apply_shadow: config.apply_shadow,
         output_format: config.output_format,
+        face_aware_cropping: config.face_aware_cropping,
+        face_margin: config.face_margin,
+        pretrim_borders: config.pretrim_borders,
         files: files.map((f) => f.file),
       };
       createCollageMutation.mutate(collageData);

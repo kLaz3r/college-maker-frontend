@@ -37,6 +37,9 @@ const baseSchema = {
   apply_shadow: z.boolean(),
   output_format: z.enum(["jpeg", "png", "tiff"]).optional(),
   transparency: z.boolean().optional(),
+  face_aware_cropping: z.boolean().optional(),
+  face_margin: z.number().min(0.0).max(0.3).optional(),
+  pretrim_borders: z.boolean().optional(),
 };
 
 const collageConfigSchema = z.discriminatedUnion("mode", [
@@ -78,6 +81,9 @@ const DEFAULT_CONFIG: CollageConfigForm = {
   apply_shadow: false,
   output_format: "jpeg",
   transparency: false,
+  face_aware_cropping: false,
+  face_margin: 0.08,
+  pretrim_borders: false,
 };
 
 export function ConfigurationPanel({
@@ -506,7 +512,55 @@ export function ConfigurationPanel({
               />
               <Label htmlFor="apply_shadow">Apply shadow effects</Label>
             </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="face_aware_cropping"
+                checked={watch("face_aware_cropping") ?? false}
+                onCheckedChange={(checked) =>
+                  setValue("face_aware_cropping", !!checked)
+                }
+                disabled={disabled}
+              />
+              <Label htmlFor="face_aware_cropping">Face-aware cropping</Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="pretrim_borders"
+                checked={watch("pretrim_borders") ?? false}
+                onCheckedChange={(checked) =>
+                  setValue("pretrim_borders", !!checked)
+                }
+                disabled={disabled}
+              />
+              <Label htmlFor="pretrim_borders">Auto-trim borders</Label>
+            </div>
           </div>
+
+          {/* Face Margin (only show when face-aware cropping is enabled) */}
+          {watch("face_aware_cropping") && (
+            <div className="space-y-2">
+              <Label htmlFor="face_margin">Face Margin</Label>
+              <Input
+                id="face_margin"
+                type="number"
+                step="0.01"
+                min="0.0"
+                max="0.3"
+                {...register("face_margin", { valueAsNumber: true })}
+                disabled={disabled}
+              />
+              <p className="text-xs text-gray-500">
+                Extra padding around detected faces (0.0-0.3, default: 0.08)
+              </p>
+              {errors.face_margin && (
+                <p className="text-sm text-red-600">
+                  {errors.face_margin.message}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-2">

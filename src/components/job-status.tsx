@@ -128,7 +128,7 @@ export function JobStatus({ job, onDownload, onReset }: JobStatusProps) {
         {job.status === "processing" && (
           <div className="text-center text-sm text-gray-600">
             <p>Processing your images... This may take a few minutes.</p>
-            <p className="mt-1">Please don't close this page.</p>
+            <p className="mt-1">Please don&apos;t close this page.</p>
           </div>
         )}
 
