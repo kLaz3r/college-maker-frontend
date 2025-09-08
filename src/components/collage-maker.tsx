@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { apiClient } from "~/lib/api";
@@ -29,6 +29,10 @@ export function CollageMaker() {
   const [gridOptimization, setGridOptimization] =
     useState<GridOptimizationData | null>(null);
   const [showGridOptimization, setShowGridOptimization] = useState(false);
+
+  // Refs for auto-scroll sections
+  const gridOptimizationRef = useRef<HTMLDivElement | null>(null);
+  const jobStatusRef = useRef<HTMLDivElement | null>(null);
 
   // Create collage mutation
   const createCollageMutation = useMutation({
@@ -87,6 +91,26 @@ export function CollageMaker() {
       }
     }
   }, [jobStatus]);
+
+  // Auto-scroll to Grid Optimization when shown
+  useEffect(() => {
+    if (showGridOptimization && gridOptimizationRef.current) {
+      gridOptimizationRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [showGridOptimization]);
+
+  // Auto-scroll to Job Status when a job is set
+  useEffect(() => {
+    if (currentJob && jobStatusRef.current) {
+      jobStatusRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [currentJob]);
 
   const handleCreateCollage = (config: CollageFormConfig) => {
     if (files.length < 2) {
@@ -261,7 +285,7 @@ export function CollageMaker() {
 
       {/* Grid Optimization Results */}
       {showGridOptimization && gridOptimization && (
-        <div className="space-y-4">
+        <div className="space-y-4" ref={gridOptimizationRef}>
           <h2 className="text-2xl font-semibold text-gray-900">
             Grid Optimization
           </h2>
@@ -407,7 +431,7 @@ export function CollageMaker() {
 
       {/* Job Status */}
       {currentJob && (
-        <div className="space-y-4">
+        <div className="space-y-4" ref={jobStatusRef}>
           <h2 className="text-2xl font-semibold text-gray-900">Job Status</h2>
           <JobStatus
             job={jobStatus ?? currentJob}

@@ -71,19 +71,19 @@ interface ConfigurationPanelProps {
 
 const DEFAULT_CONFIG: CollageConfigForm = {
   mode: "mm",
-  width_mm: 150,
-  height_mm: 100,
+  width_mm: 400,
+  height_mm: 300,
   dpi: 150,
-  layout_style: "grid",
-  spacing: 30.0,
+  layout_style: "masonry",
+  spacing: 5.0,
   background_color: "#FFFFFF",
   maintain_aspect_ratio: true,
   apply_shadow: false,
   output_format: "jpeg",
   transparency: false,
-  face_aware_cropping: false,
+  face_aware_cropping: true,
   face_margin: 0.08,
-  pretrim_borders: false,
+  pretrim_borders: true,
 };
 
 export function ConfigurationPanel({
@@ -157,8 +157,8 @@ export function ConfigurationPanel({
                   setValue("height_px", 1080);
                 } else {
                   setValue("dpi", 150);
-                  setValue("width_mm", 150);
-                  setValue("height_mm", 100);
+                  setValue("width_mm", 400);
+                  setValue("height_mm", 300);
                 }
               }}
               disabled={disabled}
@@ -326,14 +326,22 @@ export function ConfigurationPanel({
           {/* DPI */}
           <div className="space-y-2">
             <Label htmlFor="dpi">DPI (Resolution)</Label>
-            <Input
-              id="dpi"
-              type="number"
-              min="72"
-              max="300"
-              {...register("dpi", { valueAsNumber: true })}
+            <Select
+              value={String(watch("dpi"))}
+              onValueChange={(value: string) =>
+                setValue("dpi", parseInt(value, 10))
+              }
               disabled={disabled}
-            />
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select DPI" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="96">96 dpi (Low)</SelectItem>
+                <SelectItem value="150">150 dpi (Standard)</SelectItem>
+                <SelectItem value="300">300 dpi (High)</SelectItem>
+              </SelectContent>
+            </Select>
             {errors.dpi && (
               <p className="text-sm text-red-600">{errors.dpi.message}</p>
             )}
